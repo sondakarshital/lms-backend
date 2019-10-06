@@ -5,8 +5,8 @@ module.exports.sendMail = function (req) {
       var client = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'sondakarshital@gmail.com',
-          pass: '9741731153'
+          user: '*****@gmail.com',
+          pass: '******'
         }
       });
       var email = {
