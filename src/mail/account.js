@@ -10,8 +10,8 @@ module.exports.sendMail = function (req) {
         }
       });
       var email = {
-        from: 'sondakarshital@gmail.com',
-        to: 'ssondakar@gmail.com',
+        from: '***',
+        to: '****',
         subject: 'LMS reset password link',
          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
