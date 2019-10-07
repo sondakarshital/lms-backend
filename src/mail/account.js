@@ -5,13 +5,13 @@ module.exports.sendMail = function (req) {
       var client = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: '*****@gmail.com',
-          pass: '******'
+          user: '***@gmail.com',
+          pass: '***'
         }
       });
       var email = {
-        from: '***',
-        to: '****',
+        from: '****@gmail.com',
+        to: '****@gmail.com',
         subject: 'LMS reset password link',
          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
