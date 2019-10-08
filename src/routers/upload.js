@@ -6,78 +6,85 @@ const router = new express.Router();
 const multer = require("multer");
 var path = require("path");
 var fs = require('fs');
+// const { Storage } = require('@google-cloud/storage');
+// const storage = new Storage();
+// Imports the Google Cloud client library
 
-var storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, "./uploads");
-    },
-    filename: function (req, file, callback) {
-        callback(null, file.originalname);
-    }
-});
-var upload = multer({ storage: storage }).any("fileupload");
+// var mulStorage = multer.diskStorage({
+//     destination: function (req, file, callback) {
+//         callback(null, "./uploads");
+//     },
+//     filename: function (req, file, callback) {
+//         callback(null, file.originalname);
+//     }
+// });
+// var upload = multer({ storage: mulStorage }).any("fileupload");
 
-router.post("/uploads/upload", auth, (req, res) => {
-    upload(req, res, function (err) {
-        if (err) {
-            return res.end("Error uploading file.");
+const gcs = require('../middleware/google-cloud-storage');
+
+router.post("/uploads/upload", auth, gcs.multer.single('upload'),
+    gcs.sendUploadToGCS, async (req, res, next) => {
+        let upload = new Upload();
+        upload.fileName = req.file.originalname;
+        var fileType = path.extname(req.file.originalname).split(".")[1];
+        var videoTypes = ['mp4','webm'];
+        var audioType = ['mp3'];
+        if(videoTypes.includes(fileType)) upload.fileType = "video/"+fileType;
+        if(audioType.includes(fileType)) upload.fileType = "audio/"+fileType;
+        upload.filePath = req.file.cloudStoragePublicUrl;
+        upload.owner = req.user;
+        await upload.save();
+        var data = {
+            "filePath": upload.filePath,
+            "message": "Uploaded succesfully"
         }
-        req.files.forEach(async function (file) {
-            let upload = new Upload();
-            upload.fileName = file.originalname;
-            upload.fileType = path.extname(file.originalname);
-            upload.filePath = path.resolve(file.path);
-            upload.owner = req.user;
-            await upload.save();
-        });
-        res.end("File is uploaded");
+        console.log("data ", data);
+        res.status(200).send(data);
     });
-});
 
 router.get("/uploads/file", auth, async (req, res) => {
     console.log(req.query.filename);
     var file = await Upload.find({ fileName: req.query.filename });
-    console.log("file ",file);
+    console.log("file ", file);
     var respStream = fs.createReadStream(file[0].filePath);
     respStream.pipe(res);
 });
 
 router.get("/uploads/files", auth, async (req, res) => {
-    try{
+    try {
         let files = await Upload.find({});
         let filesArray = [];
-        await mapData(files,res);
-    }catch(e){
-        console.log("e ",e);
+        await mapData(files, res);
+    } catch (e) {
+        console.log("e ", e);
         res.status(400).send();
     }
 });
 router.delete("/uploads/file", auth, async (req, res) => {
-    fs.unlink("./uploads/"+req.query.filename,async (err)=>{
-        if(err)  {
+    fs.unlink("./uploads/" + req.query.filename, async (err) => {
+        if (err) {
             return res.status(400).send();
         }
-        await Upload.findOneAndDelete({ fileName: req.query.filename})
+        await Upload.findOneAndDelete({ fileName: req.query.filename })
         res.status(200).send()
     })
 });
 
-
-
-async function mapData(files,res){
+async function mapData(files, res) {
     var finalArray = [];
     count = 0;
-    files.forEach(async file=>{
+    files.forEach(async file => {
         let fileData = {};
         fileData.name = file.fileName;
         fileData.type = file.fileType;
         fileData.createdAt = file.createdAt;
+        fileData.fileUrl = file.filePath;
         fileData.updatedAt = file.updatedAt;
         var user = await User.findById(file.owner);
         fileData.uploadedBy = user.name;
         finalArray.push(fileData);
         ++count;
-        if(count == files.length){
+        if (count == files.length) {
             res.send(finalArray);
         }
     });
