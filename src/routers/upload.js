@@ -6,6 +6,9 @@ const router = new express.Router();
 const multer = require("multer");
 var path = require("path");
 var fs = require('fs');
+var gc = require('../middleware/google-cloud-storage')
+var bucket = gc.bucket;
+var mail = require("../mail/account");
 // const { Storage } = require('@google-cloud/storage');
 // const storage = new Storage();
 // Imports the Google Cloud client library
@@ -38,7 +41,11 @@ router.post("/uploads/upload", auth, gcs.multer.single('upload'),
             "filePath": upload.filePath,
             "message": "Uploaded succesfully"
         }
-        console.log("data ", data);
+        req.fileName = req.file.originalname;
+        var emails = await User.find({},{email:1,_id:0});
+        req.emails = getAllEmails(emails);
+        console.log("emails ",  req.emails);
+        mail.notifyAll(req);
         res.status(200).send(data);
     });
 
@@ -50,6 +57,7 @@ router.get("/uploads/file", auth, async (req, res) => {
     respStream.pipe(res);
 });
 
+//downloading files from the local dir.
 router.get("/uploads/files", auth, async (req, res) => {
     try {
         let files = await Upload.find({});
@@ -88,6 +96,39 @@ async function mapData(files, res) {
             res.send(finalArray);
         }
     });
+}
+//Downloading files from cloud
+router.get("/uploads/cloud/file", async (req, res) => {
+    console.log(req.query.filename);
+    var file = await Upload.find({ fileName: req.query.filename });
+   
+    var remoteFile = bucket.file(req.query.filename);
+
+    remoteFile.createReadStream()
+    .on('error', function(err) {})
+    .on('response', function(response) {
+        console.log("response ",response);
+     })
+    .on('end', function() {
+      // The file is fully downloaded.
+    })
+    .pipe(res);
+});
+router.delete("/uploads/cloud/file", auth, async (req, res) => {
+    var file = bucket.file(req.query.filename);
+    file.delete().then(async function(data) {
+        var apiResponse = data[0];
+        await Upload.findOneAndDelete({ fileName: req.query.filename })
+        res.status(200).send();
+      });
+});
+
+function getAllEmails(emails){
+    var finalEmails ="";
+    emails.forEach(data=>{
+        finalEmails+=","+data.email;
+    });
+    return finalEmails;
 }
 
 module.exports = router;

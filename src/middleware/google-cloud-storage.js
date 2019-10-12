@@ -69,5 +69,6 @@ const multer = Multer({
 module.exports = {
   getPublicUrl,
   sendUploadToGCS,
-  multer
+  multer,
+  bucket
 };
