@@ -42,6 +42,22 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    mob: {
+        type: String,
+        trim: true
+    },
+    dob: {
+        type: String,
+        trim: true
+    },
+    dept: {
+        type: String,
+        trim: true
+    },
+    address: {
+        type: String,
+        trim: true
+    },
     tokens: [{
         token: {
             type: String,
@@ -54,17 +70,6 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-
-// userSchema.virtual('tasks', {
-//     ref: 'Task',
-//     localField: '_id',
-//     foreignField: 'owner'
-// })
-// userSchema.virtual('tasks',{
-//     ref : 'Task',
-//     foreignField : 'owner',
-//     localField : '_id'
-// })
 
 userSchema.methods.toJSON = function () {
     const user = this

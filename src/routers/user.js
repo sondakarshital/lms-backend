@@ -25,6 +25,7 @@ router.post('/users', async (req, res) => {
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch (e) {
+        console.log("e",e);
         res.status(400).send(e)
     }
 })
@@ -73,6 +74,7 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
     await req.user.save();
     res.send();
 }, (error, req, res, next) => {
+    console.log("error.message",error.message);
     res.status(400).send({ error: error.message });
 })
 

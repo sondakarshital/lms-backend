@@ -30,10 +30,12 @@ router.post("/uploads/upload", auth, gcs.multer.single('upload'),
         let upload = new Upload();
         upload.fileName = req.file.originalname;
         var fileType = path.extname(req.file.originalname).split(".")[1];
-        var videoTypes = ['mp4','webm'];
+        console.log("fileType",fileType);
+        var videoTypes = ['mp4','webm','wmv'];
         var audioType = ['mp3'];
         if(videoTypes.includes(fileType)) upload.fileType = "video/"+fileType;
         if(audioType.includes(fileType)) upload.fileType = "audio/"+fileType;
+        if(!upload.fileType) upload.fileType = fileType; 
         upload.filePath = req.file.cloudStoragePublicUrl;
         upload.owner = req.user;
         await upload.save();
@@ -45,7 +47,7 @@ router.post("/uploads/upload", auth, gcs.multer.single('upload'),
         var emails = await User.find({},{email:1,_id:0});
         req.emails = getAllEmails(emails);
         console.log("emails ",  req.emails);
-        mail.notifyAll(req);
+       // mail.notifyAll(req);
         res.status(200).send(data);
     });
 
@@ -57,10 +59,34 @@ router.get("/uploads/file", auth, async (req, res) => {
     respStream.pipe(res);
 });
 
-//downloading files from the local dir.
+//getting files from cloud.
 router.get("/uploads/files", auth, async (req, res) => {
     try {
-        let files = await Upload.find({});
+        console.log("to get all files");
+
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.pageNo);
+        console.log("limit,page",limit,page)
+        let files;
+        if(limit && page){
+             files = await Upload.find({}).skip((limit * page) - limit).limit(limit);
+        }else{
+            files = await Upload.find({});
+        }
+        let filesArray = [];
+        await mapData(files, res);
+    } catch (e) {
+        console.log("e ", e);
+        res.status(400).send();
+    }
+});
+//getting video/audio  files from cloud.
+router.get("/uploads/files/video-audio", auth, async (req, res) => {
+    try {
+        console.log("to get all video audio files");
+        let files = await Upload.find ( { $or: [ {fileType: /^video/}, {fileType: /^audio/} ] } )
+       
+        console.log("files ",files)
         let filesArray = [];
         await mapData(files, res);
     } catch (e) {

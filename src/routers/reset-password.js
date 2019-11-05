@@ -11,6 +11,7 @@ const mail = require('../mail/account.js');
 router.post("/user/reset-password", async (req, res) => {
     try {
         console.log("req", req.headers);
+        console.log("req.body.email ",req.body);
         let email = req.body.email;
         const user = await User.findOne({ email: email });
         console.log("user ", user)
@@ -24,12 +25,14 @@ router.post("/user/reset-password", async (req, res) => {
             var data = await password.save();
             req.token = token;
             req.userId = user._id.toString();
+            req.email = user.email;
             mail.sendMail(req);
             res.status(200).send({ token: token, userId: user._id.toString() });
         } else {
             res.status(404).send({ message: req.body.email + " This email id is not registred" })
         }
     } catch (e) {
+        console.log("e ",e);
         res.status(400).send({ message: "Someting went wrong" });
     }
 });
