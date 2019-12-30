@@ -26,6 +26,7 @@
     "nodemailer": "^6.3.0",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "sharp": "^0.22.1",
+    "swagger-ui-express": "^4.1.2",
     "validator": "^11.1.0"
   },
   "devDependencies": {

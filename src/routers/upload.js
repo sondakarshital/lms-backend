@@ -74,7 +74,13 @@ router.get("/uploads/files", auth, async (req, res) => {
             files = await Upload.find({});
         }
         let filesArray = [];
-        await mapData(files, res);
+        console.log("files.length ",files.length);
+        if(files.length>0) {
+            await mapData(files, res);
+        }else{
+            res.send(filesArray);
+        }
+        
     } catch (e) {
         console.log("e ", e);
         res.status(400).send();
