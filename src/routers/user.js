@@ -115,7 +115,7 @@ router.get('/users/:id/avatar',async (req,res)=>{
     try{
     const user = await User.findById(req.params.id);
     if(!user || !user.avatar){
-        throw new Error();
+        throw new Error("No profile pic found");
     }
     res.set('Content-Type','png');
     res.send(user.avatar);
