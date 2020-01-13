@@ -89,12 +89,70 @@ router.get("/uploads/files", auth, async (req, res) => {
 //getting video/audio  files from cloud.
 router.get("/uploads/files/video-audio", auth, async (req, res) => {
     try {
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.pageNo);
         console.log("to get all video audio files");
-        let files = await Upload.find ( { $or: [ {fileType: /^video/}, {fileType: /^audio/} ] } )
-       
+        let files;
+        if(limit && page){
+            files = await Upload.find ( { $or: [ {fileType: /^video/}, {fileType: /^audio/} ] } ).skip((limit * page) - limit).limit(limit);
+        }else{
+            files = await Upload.find ( { $or: [ {fileType: /^video/}, {fileType: /^audio/} ] } )
+        }
         console.log("files ",files)
         let filesArray = [];
-        await mapData(files, res);
+        if(files.length>0) {
+            await mapData(files, res);
+        }else{
+            res.send(filesArray);
+        }
+    } catch (e) {
+        console.log("e ", e);
+        res.status(400).send();
+    }
+});
+//getting pdf files from cloud.
+router.get("/uploads/files/pdf", auth, async (req, res) => {
+    try {
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.pageNo);
+        console.log("to get all pdf");
+        let files;
+        if(limit && page){
+             files = await Upload.find ( { $or: [ {fileType: /^pdf/}] }).skip((limit * page) - limit).limit(limit);
+        }else{
+             files = await Upload.find ( { $or: [ {fileType: /^pdf/}] })
+        }
+        console.log("files ",files)
+        let filesArray = [];
+        if(files.length>0) {
+            await mapData(files, res);
+        }else{
+            res.send(filesArray);
+        }
+    } catch (e) {
+        console.log("e ", e);
+        res.status(400).send();
+    }
+});
+//getting images from cloud.
+router.get("/uploads/files/images", auth, async (req, res) => {
+    try {
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.pageNo);
+        console.log("to get all image files");
+        let files;
+        if(limit && page){
+             files = await Upload.find ( { $or: [ {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } ).skip((limit * page) - limit).limit(limit);
+        }else{
+             files = await Upload.find ( { $or: [ {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } )
+        }
+        console.log("files ",files)
+        let filesArray = [];
+        if(files.length>0) {
+            await mapData(files, res);
+        }else{
+            res.send(filesArray);
+        }
     } catch (e) {
         console.log("e ", e);
         res.status(400).send();
