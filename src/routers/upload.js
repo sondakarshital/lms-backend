@@ -158,6 +158,30 @@ router.get("/uploads/files/images", auth, async (req, res) => {
         res.status(400).send();
     }
 });
+//getting other files.
+router.get("/uploads/files/other-files", auth, async (req, res) => {
+    try {
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.pageNo);
+        console.log("to get other files");
+        let files;
+        if(limit && page){
+             files = await Upload.find ( { $nor: [ {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } ).skip((limit * page) - limit).limit(limit);
+        }else{
+             files = await Upload.find ( { $nor: [  {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/}] } )
+        }
+        console.log("files ",files)
+        let filesArray = [];
+        if(files.length>0) {
+            await mapData(files, res);
+        }else{
+            res.send(filesArray);
+        }
+    } catch (e) {
+        console.log("e ", e);
+        res.status(400).send();
+    }
+});
 router.delete("/uploads/file", auth, async (req, res) => {
     fs.unlink("./uploads/" + req.query.filename, async (err) => {
         if (err) {
