@@ -66,11 +66,16 @@ router.get("/uploads/files", auth, async (req, res) => {
 
         const limit = Number(req.query.limit);
         const page = Number(req.query.pageNo);
-        console.log("limit,page",limit,page)
+        let term = req.query.term;
+        if(term == "") term = "undefined"
+        console.log("limit,page,term",limit,page,term);
         let files;
-        if(limit && page){
-             files = await Upload.find({}).skip((limit * page) - limit).limit(limit);
+        if(limit && page && term!="undefined"){
+             files = await Upload.find({ fileName: { $regex: term, $options: "i" }}).skip((limit * page) - limit).limit(limit);
+        }else if(term!="undefined"){
+            files = await Upload.find({ fileName: { $regex: term, $options: "i" }});
         }else{
+            console.log("herrrr")
             files = await Upload.find({});
         }
         let filesArray = [];

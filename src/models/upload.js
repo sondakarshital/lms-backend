@@ -22,7 +22,7 @@ const uploadSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-
+uploadSchema.index({fileName: 'text'});
 const Upload = mongoose.model('Upload',uploadSchema)
 
 module.exports = Upload
