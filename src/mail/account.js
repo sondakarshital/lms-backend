@@ -17,7 +17,7 @@ module.exports.sendMail = function (req) {
           '' + req.headers.origin + '/password-reset?token='+req.token +"&userid="+req.userId +'\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
-      client.senddMail(email, function(err, info){
+      client.sendMail(email, function(err, info){
         if (err ){
           console.log(err);
         }
