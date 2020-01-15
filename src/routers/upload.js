@@ -144,9 +144,9 @@ router.get("/uploads/files/images", auth, async (req, res) => {
         console.log("to get all image files");
         let files;
         if(limit && page){
-             files = await Upload.find ( { $or: [ {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } ).skip((limit * page) - limit).limit(limit);
+             files = await Upload.find ( { $or: [{fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/} ] } ).skip((limit * page) - limit).limit(limit);
         }else{
-             files = await Upload.find ( { $or: [ {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } )
+             files = await Upload.find ( { $or: [ {fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/}] } )
         }
         console.log("files ",files)
         let filesArray = [];
@@ -168,9 +168,9 @@ router.get("/uploads/files/other-files", auth, async (req, res) => {
         console.log("to get other files");
         let files;
         if(limit && page){
-             files = await Upload.find ( { $nor: [ {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/} ] } ).skip((limit * page) - limit).limit(limit);
+             files = await Upload.find ( { $nor: [{fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/} ] } ).skip((limit * page) - limit).limit(limit);
         }else{
-             files = await Upload.find ( { $nor: [  {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/}, {fileType: /^jpg/},{fileType: /^tif/},{fileType: /^png/}] } )
+             files = await Upload.find ( { $nor: [  {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/}] } )
         }
         console.log("files ",files)
         let filesArray = [];
