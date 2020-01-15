@@ -123,5 +123,16 @@ router.get('/users/:id/avatar',async (req,res)=>{
         res.status(400).send();
     }
 })
+router.get('/users/all', auth,async (req, res) => {
+    const user = new User(req.body);
+    try {
+        var users = await User.find({});
+        console.log("all users",users);
+        res.status(201).send(users);
+    } catch (e) {
+        console.log("e",e);
+        res.status(400).send(e)
+    }
+})
 
 module.exports = router

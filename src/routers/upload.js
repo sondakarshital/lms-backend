@@ -238,6 +238,25 @@ router.delete("/uploads/cloud/file", auth, async (req, res) => {
         res.status(200).send();
       });
 });
+router.get("/uploads/files/count", auth, async (req, res) => {
+    try{
+    var videoAudio = await Upload.find ( { $or: [ {fileType: /^video/}, {fileType: /^audio/} ] } )
+    var pdf = await Upload.find ( { $or: [ {fileType: /^pdf/}] })
+    var images = await Upload.find ( { $or: [ {fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/}] } )
+    var others = await Upload.find ( { $nor: [  {fileType: /^pdf/},{fileType: /^video/}, {fileType: /^audio/}, {fileType: /^gif/},{fileType: /^GIF/}, {fileType: /^jpg/},{fileType: /^JPG/},{fileType: /^tif/},{fileType: /^TIF/},{fileType: /^png/},{fileType: /^PNG/},{fileType: /^jpeg/},{fileType: /^JPEG/}] } )
+    var response = {
+        "videoAudio" :videoAudio.length,
+         "pdf" : pdf.length,
+         "images" : images.length,
+         "others" : others.length
+    }
+    console.log("response count ",response);
+    res.status(200).send(response);
+}catch(e){
+    console.log("e ", e);
+    res.status(400).send();
+}
+});
 
 function getAllEmails(emails){
     var finalEmails ="";

@@ -3,13 +3,13 @@ var sgTransport = require('nodemailer-sendgrid-transport');
 var client = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: '***@gmail.com',
-    pass: '****'
+    user: 'lmstest290195@gmail.com',
+    pass: 'ashaRamesh29*'
   }
 });
 module.exports.sendMail = function (req) { 
       var email = {
-        from: '****@gmail.com',
+        from: 'lmstest290195@gmail.com',
         to: req.email,
         subject: 'LMS reset password link',
          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
@@ -29,7 +29,7 @@ module.exports.sendMail = function (req) {
 module.exports.notifyAll = function(req){
   
   var email = {
-    from: '****@gmail.com',
+    from: 'lmstest290195@gmail.com',
     to: req.emails,
     subject: 'Uploaded new content on LMS',
      text: 'Your friend just uploaded '+ req.fileName+' file.Log in here to see'+' '+req.headers.origin
