@@ -70,13 +70,10 @@ router.get("/uploads/files", auth, async (req, res) => {
         if(term == "") term = "undefined"
         console.log("limit,page,term",limit,page,term);
         let files;
-        if(limit && page && term!="undefined"){
+        if(term!="undefined"){
              files = await Upload.find({ fileName: { $regex: term, $options: "i" }}).skip((limit * page) - limit).limit(limit);
-        }else if(term!="undefined"){
-            files = await Upload.find({ fileName: { $regex: term, $options: "i" }});
         }else{
-            console.log("herrrr")
-            files = await Upload.find({});
+            files = await Upload.find({}).skip((limit * page) - limit).limit(limit);;
         }
         let filesArray = [];
         console.log("files.length ",files.length);
