@@ -29,7 +29,11 @@ router.post("/user/reset-password", async (req, res) => {
             mail.sendMail(req);
             res.status(200).send({ token: token, userId: user._id.toString() });
         } else {
-            res.status(404).send({ message: req.body.email + " This email id is not registred" })
+            var message = "";
+            if(req.body.email) {
+                message = req.body.email;
+            }
+            res.status(404).send({ message: message + " This email id is not registred" })
         }
     } catch (e) {
         console.log("e ",e);
